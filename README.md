@@ -13,14 +13,15 @@
 ```bash
 === FUFF === 2025-06-14 02:19:24 ===
 
-[!] FFUF ran but produced no output. 	
+[!] FFUF ran but produced no output.
 
 === NUCLEI === 2025-06-14 02:19:24 ===
 
-[azure-domain-tenant] [http] [info] https://....																																  
-=== DECODE === 2025-06-14 02:14:30 ===                                                                           
+[azure-domain-tenant] [http] [info] https://....
 
-[+] Encoded: dns=... 
+=== DECODE === 2025-06-14 02:14:30 ===
+
+[+] Encoded: dns=...
 [base64] v..
 ```
 
