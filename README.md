@@ -10,19 +10,19 @@
 - If no wordlist is selected it will automatically search typical `SecLists` paths
 - Additionally, you alter the path or add your own in `cicada.py`
 - Scan, decode, and fuzz logs should all be written to a single `.log` file 
-	ex. ```bash
-	=== FUFF === 2025-06-14 02:19:24 ===
+```bash
+=== FUFF === 2025-06-14 02:19:24 ===
 
-	[!] FFUF ran but produced no output. 	
+[!] FFUF ran but produced no output. 	
 
-	=== NUCLEI === 2025-06-14 02:19:24 ===
+=== NUCLEI === 2025-06-14 02:19:24 ===
 
-	[azure-domain-tenant] [http] [info] https://....																																  
-	=== DECODE === 2025-06-14 02:14:30 ===                                                                           
+[azure-domain-tenant] [http] [info] https://....																																  
+=== DECODE === 2025-06-14 02:14:30 ===                                                                           
 
-	[+] Encoded: dns=... 
-	[base64] v..
-	```
+[+] Encoded: dns=... 
+[base64] v..
+```
 
 ## Overview
 Designed to meet my personal testing needs, clean logs, and real-world utility.
