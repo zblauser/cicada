@@ -3,20 +3,32 @@ import os
 import datetime
 import re
 
+def banner(mode="[custom]"):                                                                                                         
+    logo = fr"""                                                                                                        
+                                                                                                                      
+   )\.-.  .'(     )\.-.     /`-.      )\.-.     /`-.                                                                  
+ ,' ,-,_) \  )  ,' ,-,_)  ,' _  \   ,'     )  ,' _  \                                                                 
+(  .   _  ) (  (  .   _  (  '-' (  (  .-, (  (  '-' (                                                                 
+ ) '..' ) \  )  ) '..' )  )   _  )  ) '._\ )  )   _  )                                                                
+(  ,   (   ) \ (  ,   (  (  ,' ) \ (  ,   (  (  ,' ) \                                                                
+ )/'._.'    )/  )/'._.'   )/    )/  )/ ._.'   )/    )/                                                                
+                                                                                                                      
+Cicada | {mode}                                                                                                      
+"""                                                                                                                   
+    print(logo) 
+
 def remove_ansi(text):
 	ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 	return ansi_escape.sub('', text)
 
 def log_output(target_url, tool_name, data):
-	# Extract clean domain (e.g., "example" from "https://example.com")
 	parsed = urlparse(target_url)
 	domain = parsed.netloc or parsed.path
-	domain = domain.split(":")[0]  # remove port if any
-	clean_name = domain.split(".")[0]  # take only 'example' from 'example.com'
+	domain = domain.split(":")[0] 
+	clean_name = domain.split(".")[0]
 
 	filename = f"{clean_name}.log"
 
-	# Write or append to file
 	with open(filename, "a") as f:
 		timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		f.write(f"\n=== {tool_name.upper()} === {timestamp} ===\n")

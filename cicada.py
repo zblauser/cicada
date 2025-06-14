@@ -1,6 +1,18 @@
 import argparse
 from urllib.parse import urlparse
-from core import scanner, intruder, decoder, analyzer, utils
+from core import scanner, intruder, decoder, analyzer, collaborator, crawler, proxy, utils
+
+def determine_mode_label(args):
+	if args.deep:
+		return "[Deep]"
+	elif args.fast:
+		return "[Fast]"
+	elif args.normal:
+		return "[Normal]"
+	elif any([args.scan, args.fuzz, args.decodeall, args.proxy, args.crawl, args.collab]):
+		return "[Custom]"
+	else:
+		return "[Custom]"
 
 def extract_log_basename(url):
 	parsed = urlparse(url)
@@ -18,6 +30,18 @@ def r_fuzzer(target, wordlist):
 	print(output)
 	utils.log_output(target, "fuff", output)
 
+def r_proxy():
+	from core import proxy
+	proxy.run_proxy()
+
+def r_crawler(target):
+	from core import crawler
+	crawler.crawl_target(target)
+
+def r_collaborator(target):
+	from core import collaborator
+	collaborator.poll_collaborator(target)
+
 def r_decoders(args):	
 	if args.b64encode:
 		print(decoder.base64_encode(args.b64encode))
@@ -34,30 +58,29 @@ def r_logdecoders(args):
 		if not logfile and args.target:
 			logfile = f"{extract_log_basename(args.target)}.log"
 		if logfile:
-			analyzer.decode_all_from_log(logfile)
+			analyzer.analyze(logfile)
 		else:
 			print("[-] Please provide a log file with --decodeall or use it with a target.")
 
 def parse_args():
-	banner = """
- 
-   )\.-.  .'(     )\.-.     /`-.      )\.-.     /`-.  
- ,' ,-,_) \  )  ,' ,-,_)  ,' _  \   ,'     )  ,' _  \ 
-(  .   _  ) (  (  .   _  (  '-' (  (  .-, (  (  '-' ( 
- ) '..' ) \  )  ) '..' )  )   _  )  ) '._\ )  )   _  )  
-(  ,   (   ) \ (  ,   (  (  ,' ) \ (  ,   (  (  ,' ) \ 
- )/'._.'    )/  )/'._.'   )/    )/  )/ ._.'   )/    )/ 
-"""
-	parser = argparse.ArgumentParser(
-		description = banner,	
+	class CustomParser(argparse.ArgumentParser):
+		def print_help(self):
+			utils.banner("[Help]")
+			super().print_help()
+
+	parser = CustomParser(
+		description = "", 
 		usage=argparse.SUPPRESS,
 		formatter_class=argparse.RawDescriptionHelpFormatter
-)
+	)
 
 	parser.add_argument("target", help="Target URL/IP", nargs="?")
 	parser.add_argument("-s", "--scan", action="store_true", help="Run vulnerability scanner")
 	parser.add_argument("-z", "--fuzz", action="store_true", help="Run FFUF fuzzing")
 	parser.add_argument("-w", "--wordlist", help="Path to wordlist file (e.g., SecLists/.../common.txt)")
+	parser.add_argument("-p", "--proxy", action="store_true", help="Run proxy MITM")
+	parser.add_argument("-r", "--crawl", action="store_true", help="Run crawler")
+	parser.add_argument("-c", "--collab", action="store_true", help="Poll interactsh collaborator")	
 	parser.add_argument("-b", "--b64encode", help="Base64 encode string")
 	parser.add_argument("-x", "--b64decode", help="Base64 decode string")
 	parser.add_argument("-e", "--urlencode", help="URL encode string")
@@ -72,18 +95,38 @@ def parse_args():
 
 def main():
 	args = parse_args()
+	mode_label = determine_mode_label(args)
+	utils.banner(mode_label)
 
 	r_decoders(args)
 	r_logdecoders(args)
 
 	selected = []
 
+	if not any(vars(args).values()):
+		print("[*] No options provided. Entering interactive mode.")
+		args.target = input("Target URL/IP: ").strip()
+		level = input("Scan level (fast/normal/deep): ").strip().lower()
+		if level == "fast":
+			args.fast = True
+		elif level == "normal":
+			args.normal = True
+		elif level == "deep":
+			args.deep = True
+
+	if args.proxy:
+		selected.append('proxy')
+	if args.crawl:
+		selected.append('crawler')
+	if args.collab:
+		selected.append('collaborator')
+
 	if args.deep:
-		selected = ['scanner', 'fuzzer', 'analyze', 'decode']
+		selected = ['scanner', 'fuzzer', 'analyze', 'decode', 'proxy', 'crawler', 'collaborator']
 	elif args.fast:
 		selected = ['scanner', 'fuzzer']
 	elif args.normal or not any ([args.scan, args.fuzz, args.deep, args.fast]):
-		selected = ['scanner', 'fuzzer', 'decode']
+		selected = ['scanner', 'fuzzer', 'decode', 'crawler']
 	else:
 		if args.scan:
 			selected.append('scanner')
@@ -100,6 +143,12 @@ def main():
 		if 'analyze' in selected:
 			log = f"{extract_log_basename(args.target)}.log"
 			analyzer.analyze(log)
+		if 'proxy' in selected:
+			r_proxy()
+		if 'crawler' in selected:
+			r_crawler(args.target)
+		if 'collaborator' in selected:
+			r_collaborator(args.target)
 		if 'decode' in selected:
 			log = f"{extract_log_basename(args.target)}.log"
 			analyzer.decode_all_from_log(log)

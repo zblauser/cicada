@@ -4,7 +4,7 @@ def start_interactsh_client():
 	print("[+] Starting Interactsh client...")
 	try:
 		result = subprocess.run(
-			["./interactsh-client"],  # Must be present in working dir
+			["./interactsh-client"], 
 			capture_output=True, text=True
 		)
 		return result.stdout

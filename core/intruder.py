@@ -14,6 +14,7 @@ def run_ffuf(target, wordlist=None):
 	if not wordlist:
 		possible_paths = [
 			"~/SecLists/Discovery/Web-Content/common.txt",
+			#Literally for me, feel free to add a custom path here (work in progress)
 			"~/Library/Mobile Documents/com~apple~CloudDocs/Code/recon/marriott/SecLists/Discovery/Web-Content/common.txt",
 			"/usr/share/wordlists/dirb/common.txt"
 		]

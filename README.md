@@ -1,5 +1,29 @@
 # Cicada
 
+## Change Log
+[v0.0.2]
+
+- Decode (or encode for offense) base64, hex, and URL content found in logs using `--decodeall` arg
+- Running the program will greet you with an ASCII logo and listed [Mode] `[Fast], [Normal], [Deep], [Custom], [Help]`
+- Added shorthand options to some of the arguments
+- Custom word lists can be used for fuzzing in ffuf using `-w PATH` or `--wordlist PATH`
+- If no wordlist is selected it will automatically search typical `SecLists` paths
+- Additionally, you alter the path or add your own in `cicada.py`
+- Scan, decode, and fuzz logs should all be written to a single `.log` file 
+	ex. ```bash
+	=== FUFF === 2025-06-14 02:19:24 ===
+
+	[!] FFUF ran but produced no output. 	
+
+	=== NUCLEI === 2025-06-14 02:19:24 ===
+
+	[azure-domain-tenant] [http] [info] https://....																																  
+	=== DECODE === 2025-06-14 02:14:30 ===                                                                           
+
+	[+] Encoded: dns=... 
+	[base64] v..
+	```
+
 ## Overview
 Designed to meet my personal testing needs, clean logs, and real-world utility.
 
